@@ -82,7 +82,7 @@ public:
     int getAge() { return m_age; }
 
     //重载 > 运算符
-    bool operator>(Son& res) {
+    bool operator>(Son& res) const{
         if (this->m_age > res.m_age) return true;
 
         return false;
@@ -124,7 +124,9 @@ int main(void){
 
 
 
-## 4. 形参中指定Const
+## 4. 关键字：Const
+
+### 形参中指定Const
 
 在函数的形参中加上Const，明确表示函数中的实参无须修改。
 
@@ -133,5 +135,61 @@ void func(const int* x);
 void func(const int& x);
 ```
 
+## 5. 静态数组：array
 
+对于数组s：
+
+s 和 &s[0] 都表示数组第一个元素的地址；*s 和 s[0] 都表示数组第一个元素的值。
+
+### array列表初始化(聚合初始化)
+
+```c++
+int s[3] = {1,2,3}; // 一维数组
+array<int, 3> s = {1, 2, 3};  // 基于std::array创建一维数组，可以调用array方法
+int s2[3][4] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12}; // 二维数组
+array<array<int, 3>,4> s2 = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12}; // 基于std::array创建二维数组，可以调用array方法
+```
+
+### array范围for语句
+
+```c++
+// 一维数组范围for语句
+for (auto a : s) {
+    cout << a << ends;
+}
+
+cout << endl;
+
+// 二维数组范围for语句
+for (auto &row : s2)
+{
+    for (auto a : row)  //只读。可读可写改成for (auto &a : row)
+    {
+        cout << a << ends;
+    }
+    cout << endl;
+}
+```
+
+### array自定义排序
+
+```C++
+// 用自定义函数对象排序
+struct {
+    bool operator()(int a, int b) const
+    {
+        return a > b;
+    }
+} customLess;
+
+sort(s.begin(), s.end(), customLess);
+```
+
+### array动态内存分配
+
+```c++
+int number;
+cin >> number;
+float *s3 = new float[number];
+```
 
