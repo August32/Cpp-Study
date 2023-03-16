@@ -113,7 +113,7 @@ int main(void){
 
 ### 为什么要使用函数模板？
 
-​	如果在一个项目中，需求是能够实现多个函数用来返回两个数的最大值，要求能支持[char类型](https://so.csdn.net/so/search?q=char类型&spm=1001.2101.3001.7020)、int类型、double类型变量。如果只使用普通函数，那我们需要写三个重载函数，而如果是使用函数模板，只需要申明一个函数模板，利用模数模板的类型自动推导特性就可以实现。
+​	如果在一个项目中，需求是能够实现多个函数用来返回两个数的最大值，要求能支持char类型、int类型、double类型变量。如果只使用普通函数，那我们需要写三个重载函数，而如果是使用函数模板，只需要申明一个函数模板，利用模数模板的类型自动推导特性就可以实现。
 
 ### 对比：函数模板和普通函数的区别
 
@@ -124,9 +124,9 @@ int main(void){
 
 
 
-## 4. 关键字：Const
+## 4. 关键字
 
-### 形参中指定Const
+### Const：形参中指定Const
 
 在函数的形参中加上Const，明确表示函数中的实参无须修改。
 
@@ -135,13 +135,25 @@ void func(const int* x);
 void func(const int& x);
 ```
 
+### typedef：创建别名
+
+```c++
+typedef unsigned long int Count;
+Count num = 1;
+```
+
+
+
+
 ## 5. 静态数组：array
 
 对于数组s：
 
 s 和 &s[0] 都表示数组第一个元素的地址；*s 和 s[0] 都表示数组第一个元素的值。
 
-### array列表初始化(聚合初始化)
+注意，数组名 s 不能置换为除数组的第一个元素之外的地址。
+
+### array列表初始化
 
 ```c++
 int s[3] = {1,2,3}; // 一维数组
@@ -192,4 +204,132 @@ int number;
 cin >> number;
 float *s3 = new float[number];
 ```
+
+### 处理字符串数组的标准库函数
+
+```c++
+#include <cstring>
+
+size_t strlen(const char* s);	// 显示字符串s长度
+char* strcpy(char* s1,const char* s2);	// 复制，将字符串s2复制到数组s1中
+char* strcat(char* s1,const char* s2);	// 拼接，通过将字符串s2添加到字符串s1的末尾来返回s1
+int strcmp(const char* s1,const char* s2);	// 比较，比较字符串s1和s2，当s1 < s2时，返回负值；s1 = s2时，返回0；s1 > s2时，返回正值
+```
+
+
+
+## 6. 枚举类型：enum
+
+​	枚举类型(enumeration)是 C++ 中的一种派生数据类型，它是由用户定义的若干枚举常量的**集合**。
+
+定义枚举类型的主要目的是：增加程序的可读性。枚举类型最常见也最有意义的用处之一就是用来**描述状态量**，
+
+### 声明与定义
+
+```c++
+enum color_set1 {RED, BLUE, WHITE, BLACK} color1, color2;
+enum color_set2 {GREEN2, RED2, YELLOW2, WHITE2} color3, color4;
+
+color3 = RED2;		//将枚举常量值赋给枚举变量
+color4 = color3;	//相同类型的枚举变量赋值，color4的值为RED2
+int  i = color3;	//将枚举变量赋给整型变量，i的值为1
+int  j = YELLOW2;	//将枚举常量赋给整型变量，j的值为0
+```
+
+
+
+
+
+## 7. 结构体类型：struct
+
+​	结构体声明只声明一个结构体“看起来是什么样子的”，所以**不会在内存中创建成员变量**。只有通过定义该结构体类型的变量来实例化结构体，才有地方存储初始值。
+
+```cpp
+    //非法结构体声明
+    struct Date
+    {
+        int day = 23,
+        month = 8,
+        year = 1983;
+    }；
+```
+
+### 定义与声明
+
+①	先定义结构体类型再单独进行变量定义
+
+```c++
+    struct Student
+    {
+        int Code;
+        char Name[20];
+        char Sex;
+        int Age;
+    };
+    Student Stu;
+    Student StuArray[10];
+    Student *pStu;  // 也可以用new来动态创建（在堆中，生存周期就可以自己决定）
+```
+
+②	比较安全的带构造的结构体
+
+
+```c++
+    struct node{
+        int data;
+        string str;
+        char x;
+        //注意构造函数最后这里没有分号哦！
+        node() :x(), str(), data(){} //无参数的构造函数数组初始化时调用
+        node(int a, string b, char c) :data(a), str(b), x(c){}//有参构造
+    };
+    node N1; // 无参构造
+    node N2(10,"abc",'a'); // 有参构造
+```
+
+### 赋值与访问
+
+**赋值**：初始化结构体变量成员的最简单的方法是使用初始化列表。
+
+```c++
+	Stu = {21,"ChenYiKai",'M',23};
+```
+
+**访问**：结构体中的变量，可以直接通过`"."`操作符来访问，而对于结构体指针而言：必须通过`"->"`符号来访问指针所指结构体的变量。**如果是使用结构体指针来作为函数参数，则将传递地址，这种方式在使用大型结构体时，效率会更高。**
+
+
+
+
+
+## 8. 共用体类型：union
+
+​	**共用体的各个成员不能同时带有值，全体成员只能有一个成员的值。**共用体是用于节省有限内存的一种数据类型。
+
+​	**一般情况下unnion可以用来做各种基础数据类型转换。**
+
+### 	声明和定义
+
+```c++
+union DEMO{
+    char status;
+    int a;
+    int serial[4];
+}demo;
+```
+
+<img src="C:\Users\老波比\AppData\Roaming\Typora\typora-user-images\image-20230316171719652.png" alt="image-20230316171719652" style="zoom: 67%;" />
+
+​	上面这个表格代表内存中的数据，demo.status 的值为0x1；demo.a的值为，0x4321。以此类推demo.serial的值就出来了。这个属性是union特有的。
+
+
+
+
+
+
+
+
+
+
+
+
 
